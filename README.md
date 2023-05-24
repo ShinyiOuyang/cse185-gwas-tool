@@ -2,9 +2,9 @@
 ourGWAS is an open-source tool created to do genome wide association studies using a linear regression model. The tool is able to identify single nucleotide polymorphisms based on phenotype and vcf input data, similar to the tool [plink](https://zzz.bwh.harvard.edu/plink/) which was developed by Shaun Purcell.
 
 # Install Instructions
-Installation of our tool requires the [sklearn](https://scikit-learn.org/stable/), [qqman](https://pypi.org/project/qqman/), [numpy](https://numpy.org/), and [pandas](https://pandas.pydata.org/) libraries to be installed. You can install these libraries using pip.
+Installation of our tool requires the [sklearn](https://scikit-learn.org/stable/), [qqman](https://pypi.org/project/qqman/), [numpy](https://numpy.org/), [pandas](https://pandas.pydata.org/), and [cyvcf2](https://brentp.github.io/cyvcf2/) libraries to be installed. You can install these libraries using pip.
 ```
-pip install -U scikit-learn qqman numpy pandas
+pip install -U scikit-learn qqman numpy pandas cyvcf2
 ```
 To see if the download was successful, run `python -m pip freeze` to see all packages downloaded on your virtual environment.
 
