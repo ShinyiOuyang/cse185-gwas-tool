@@ -32,9 +32,26 @@ If successful, running `ourGWAS --help` should output the usage.
 
 # Basic Usage
 
+*work in progress*
+
+The basic usage of `ourGWAS` is:
+```
+ourGWAS [--pheno in.phen] in.vcf
+```
+
 # ourGWAS options
 
+*work in progress*
+
+```
+--output
+--pheno
+--maf
+--pca 
+```
+
 # Output
+*work in progress*
 
 # Contributers
 This repository was created by Riya Kalra, Shinyi Ouyang, and Tyler Yang with inpsiration from [plink](https://zzz.bwh.harvard.edu/plink/). 
