@@ -14,10 +14,10 @@ import numpy as py
 parser = argparse.ArgumentParser()
 
 # Input
-parser.add_argument("in.pheno", type=argparse.FileType('r'), help="the input file containing normalized values for phenotypes of the samples")
+parser.add_argument("in.pheno", help="the input file containing normalized values for phenotypes of the samples")
 # https://www.cog-genomics.org/plink/1.9/input#pheno
 
-parser.add_argument("in.vcf.gz", type=argparse.FileType('r'), help="the input file to run pca and gwas")
+parser.add_argument("in.vcf.gz", help="the input file to run pca and gwas")
 
 # Options
 parser.add_argument("--pca", metavar="n", type=int, help="specifies the number of prinicple components")
