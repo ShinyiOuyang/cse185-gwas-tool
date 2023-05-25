@@ -7,26 +7,25 @@ import os
 from cyvcf2 import VCF
 from sklearn.linear_model import LinearRegression
 import sklearn.decomposition
+import pandas as pd
+import numpy as py
 
 # Sets up script argument parsing
 parser = argparse.ArgumentParser()
 
 # Input
-parser.add_argument("--pheno")
+parser.add_argument("in.pheno", type=argparse.FileType('r'), help="the input file containing normalized values for phenotypes of the samples")
 # https://www.cog-genomics.org/plink/1.9/input#pheno
 
-# I don't know what 'argparse.FileType('r')' is, so maybe getting rid of it
-# is good
-parser.add_argument("--vcf", type=argparse.FileType('r'))
+parser.add_argument("in.vcf.gz", type=argparse.FileType('r'), help="the input file to run pca and gwas")
 
 # Options
-parser.add_argument("--pca", type=int)
-parser.add_argument("--maf", type=float)
-parser.add_argument("--output", type=str)
-parser.add_argument("--qq")
+parser.add_argument("--pca", metavar="n", type=int, help="specifies the number of prinicple components")
+parser.add_argument("--maf", metavar="n", type=float, default=0.01, help="specifies the threshold to consider the minor allele (default = 0.01)")
+parser.add_argument("--qq", action="store_true", help="add a qq plot to the output")
 
 # Output
-parser.add_argument("--out", type=argparse.FileType('w'))
+parser.add_argument("-O", "--out", metavar="filename", type=argparse.FileType('w'), help="specifies the output root file name")
 
 args = parser.parse_args()
 
