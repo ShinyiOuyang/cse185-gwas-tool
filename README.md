@@ -8,6 +8,12 @@ pip install -U scikit-learn qqman numpy pandas cyvcf2
 ```
 To see if the download was successful, run `python -m pip freeze` to see all packages downloaded on your virtual environment.
 
+Note: if you do not have root access, install the same packages locally with:
+
+```
+pip install --user -U scikit-learn qqman numpy pandas cyvcf2
+```
+
 Additionally, the [htslib](https://github.com/samtools/htslib/releases/download/1.17/htslib-1.17.tar.bz2) library will be needed to index vcf files using `tabix`. In order to download, click the link above and follow the commands below:
 ```
 cd htslib-1.x      # wherever it is downloaded
@@ -21,7 +27,7 @@ To check if the download was successful, running `tabix --help` should provide t
 
 Once these required libraries are installed, you can install `ourGWAS` with the following command:
 ```
-python setup.py install
+python setup.py install  # add the --user tag if needed
 
 # if installing on Jupyter Notebook, instead run
 
@@ -36,22 +42,34 @@ If successful, running `ourGWAS --help` should output the usage.
 
 The basic usage of `ourGWAS` is:
 ```
-ourGWAS [--pheno in.phen] in.vcf
+ourGWAS [--pheno in.phen] [other options] in.vcf
 ```
+
+To run `ourGWAS` on some of the small test files in our repo, you can run:
+```
+ourGWAS --pheno test.pheno --maf 0.05 --ouput out.vcf test.gwas
+```
+This should output:
+
+<!--insert the output of the test files here-->
 
 # ourGWAS options
 
-*work in progress*
+The input required with our tool is a sorted and indexed vcf file and a phenotype file with normalized data for the samples on the specific phenotype being viewed.
 
+Users may also specify additional options below:
 ```
---output
---pheno
---maf
---pca 
+--output FILE: specifies output root file name, by default, the file will be called ourGWAS.
+
+--maf FLOAT: a decimal number from 0-1 which specifies the minimum minor allele frequency threshold to be considered. By default, this value is 0.01.
+
+--pca INT: specifies the number of principle components (PCs) to use as covariates. By default, this number is 0.
+
+--qq: outputs a qq plot along with the regular output.
 ```
 
 # Output
-*work in progress*
+The output file format is a text file similar to the one outputted by [plink's --linear option](https://www.cog-genomics.org/plink/1.9/formats#assoc_linear).
 
 # Contributers
 This repository was created by Riya Kalra, Shinyi Ouyang, and Tyler Yang with inpsiration from [plink](https://zzz.bwh.harvard.edu/plink/). 
