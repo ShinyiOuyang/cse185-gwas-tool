@@ -6,6 +6,7 @@ from ourgwas import __version__
 import os
 from cyvcf2 import VCF
 from sklearn.linear_model import LinearRegression
+import sklearn.decomposition
 
 # Sets up script argument parsing
 parser = argparse.ArgumentParser()
@@ -16,9 +17,11 @@ parser.add_argument("--pheno", type=argparse.FileType('r'))
 
 parser.add_argument("--vcf", type=argparse.FileType('r'))
 
-#Options
+# Options
 parser.add_argument("--pca", type=int)
 parser.add_argument("--maf", type=float)
+parser.add_argument("--output", type=str)
+parser.add_argument("--qq")
 
 # Output
 parser.add_argument("--out", type=argparse.FileType('w'))
