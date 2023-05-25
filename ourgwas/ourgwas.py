@@ -9,15 +9,16 @@ from sklearn.linear_model import LinearRegression
 import sklearn.decomposition
 import pandas as pd
 import numpy as py
+import scipy
 
 # Sets up script argument parsing
 parser = argparse.ArgumentParser()
 
 # Input
-parser.add_argument("in.pheno", help="the input file containing normalized values for phenotypes of the samples")
+parser.add_argument("pheno", help="the input file containing normalized values for phenotypes of the samples")
 # https://www.cog-genomics.org/plink/1.9/input#pheno
 
-parser.add_argument("in.vcf.gz", help="the input file to run pca and gwas")
+parser.add_argument("vcf", help="the input file to run pca and gwas")
 
 # Options
 parser.add_argument("--pca", metavar="n", type=int, help="specifies the number of prinicple components")
@@ -25,23 +26,31 @@ parser.add_argument("--maf", metavar="n", type=float, default=0.01, help="specif
 parser.add_argument("--qq", action="store_true", help="add a qq plot to the output")
 
 # Output
-parser.add_argument("-O", "--out", metavar="filename", type=argparse.FileType('w'), help="specifies the output root file name")
+parser.add_argument("-O", "--out", metavar="filename", help="specifies the output root file name")
 
 args = parser.parse_args()
 
-print(args.vcf)
-print(args.pheno)
+print(args)
+
 # TODO
 def main():
     print("Hello World")
     phenotype_array = get_phenotypes()
     print(phenotype_array)
-    for variant in VCF(args.vcf):
-        #print(variant)
-        genotype_array = []
-        for genotype in variant.genotypes:
-            genotype_array.append(genotype[0]+ genotype[1])
-        #print(genotype_array)
+    with open (args.out, "w") as writer:
+        for variant in VCF(args.vcf):
+            #print(variant)
+            output_info = []
+            genotype_array = []
+            for genotype in variant.genotypes:
+                genotype_array.append(genotype[0]+ genotype[1])
+            #print(genotype_array)
+            reg = scipy.stats.linregress(genotype_array, phenotype_array)
+            print(reg.pvalue)
+            output_info.append(variant.CHROM)
+            output_info.append(variant.ID)
+            output_info.append(variant.POS)
+            output_info.append(variant.POS)
 
 # Puts the values in the third column of the phenotype file into an array
 def get_phenotypes():
