@@ -5,7 +5,6 @@ import argparse
 from ourgwas import __version__
 import os
 from cyvcf2 import VCF
-from sklearn.linear_model import LinearRegression
 import sklearn.decomposition
 import pandas as pd
 import numpy as py
@@ -17,7 +16,6 @@ parser = argparse.ArgumentParser()
 # Input
 parser.add_argument("pheno", help="the input file containing normalized values for phenotypes of the samples")
 # https://www.cog-genomics.org/plink/1.9/input#pheno
-
 parser.add_argument("vcf", help="the input file to run pca and gwas")
 
 # Options
@@ -30,28 +28,29 @@ parser.add_argument("-O", "--out", metavar="filename", help="specifies the outpu
 
 args = parser.parse_args()
 
-print(args)
-
-# TODO
 def main():
-    print("Hello World")
     phenotype_array = get_phenotypes()
-    print(phenotype_array)
     with open (args.out, "w") as writer:
         for variant in VCF(args.vcf):
-            #print(variant)
             output_info = []
             genotype_array = []
             for genotype in variant.genotypes:
-                genotype_array.append(genotype[0]+ genotype[1])
-            #print(genotype_array)
+                # quantifies genotype
+                # 0 | 0 becomes 0
+                # 1 | 0 or 0 | 1 becomes 1
+                # 1 | 1 becomes 2
+                genotype_array.append(genotype[0] + genotype[1])
+
+            #https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.linregress.html
             reg = scipy.stats.linregress(genotype_array, phenotype_array)
+
+            # All information that is outputted
             output_info.append(str(variant.CHROM))
             output_info.append(str(variant.ID))
             output_info.append(str(variant.POS))
-            output_info.append(str(len(variant.genotypes)))
-            output_info.append(str(reg.rvalue))
-            output_info.append(str(reg.pvalue))
+            output_info.append(str(len(variant.genotypes))) 
+            output_info.append(str(reg.rvalue)) # Regression value
+            output_info.append(str(reg.pvalue)) # P-value for a two-sided t-test
             curr_output = "\t".join(output_info) + "\n"
             writer.write(curr_output)
 
