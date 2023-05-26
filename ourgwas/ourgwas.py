@@ -30,6 +30,8 @@ args = parser.parse_args()
 
 def main():
     phenotype_array = get_phenotypes()
+    if args.out is None:
+        args.out = "ourgwas.out.txt"
     with open (args.out, "w") as writer:
         column_names = ['CHR', 'SNP', 'BP', 'NMISS', 'BETA', 'P']
         joined_column_names = "\t".join(column_names) + "\n"
