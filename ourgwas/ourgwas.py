@@ -46,11 +46,14 @@ def main():
                 genotype_array.append(genotype[0]+ genotype[1])
             #print(genotype_array)
             reg = scipy.stats.linregress(genotype_array, phenotype_array)
-            print(reg.pvalue)
-            output_info.append(variant.CHROM)
-            output_info.append(variant.ID)
-            output_info.append(variant.POS)
-            output_info.append(variant.POS)
+            output_info.append(str(variant.CHROM))
+            output_info.append(str(variant.ID))
+            output_info.append(str(variant.POS))
+            output_info.append(str(len(variant.genotypes)))
+            output_info.append(str(reg.rvalue))
+            output_info.append(str(reg.pvalue))
+            curr_output = "\t".join(output_info) + "\n"
+            writer.write(curr_output)
 
 # Puts the values in the third column of the phenotype file into an array
 def get_phenotypes():
