@@ -38,18 +38,16 @@ If successful, running `ourGWAS --help` should output the usage.
 
 # Basic Usage
 
-*work in progress*
-
 The basic usage of `ourGWAS` is:
 ```
-ourGWAS [--pheno in.phen] [other options] in.vcf
+ourGWAS [other options] pheno-file vcf-file
 ```
 
 To run `ourGWAS` on some of the small test files in our repo, you can run:
 ```
-ourGWAS --pheno test.pheno --maf 0.05 --ouput out.vcf test.gwas
+ourGWAS example-files/lab3_gwas.phen example-files/lab3_gwas_small.vcf.gz
 ```
-This should output:
+This should output [this text file](https://github.com/ShinyiOuyang/cse185-gwas-tool/blob/main/output.txt).
 
 <!--insert the output of the test files here-->
 
