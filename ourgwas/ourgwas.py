@@ -31,6 +31,9 @@ args = parser.parse_args()
 def main():
     phenotype_array = get_phenotypes()
     with open (args.out, "w") as writer:
+        column_names = ['CHR', 'SNP', 'BP', 'NMISS', 'BETA', 'P']
+        joined_column_names = "\t".join(column_names) + "\n"
+        writer.write(joined_column_names)
         for variant in VCF(args.vcf):
             output_info = []
             genotype_array = []
@@ -45,6 +48,7 @@ def main():
             reg = scipy.stats.linregress(genotype_array, phenotype_array)
 
             # All information that is outputted
+            
             output_info.append(str(variant.CHROM))
             output_info.append(str(variant.ID))
             output_info.append(str(variant.POS))
