@@ -19,7 +19,7 @@ parser.add_argument("pheno", help="the input file containing normalized values f
 parser.add_argument("vcf", help="the input file to run pca and gwas")
 
 # Options
-parser.add_argument("--pca", metavar="n", type=int, help="specifies the number of prinicple components")
+parser.add_argument("--pca", metavar="n", type=int, default=5, help="specifies the number of prinicple components")
 parser.add_argument("--maf", metavar="n", type=float, default=0.01, help="specifies the threshold to consider the minor allele (default = 0.01)")
 parser.add_argument("--qq", action="store_true", help="add a qq plot to the output")
 
