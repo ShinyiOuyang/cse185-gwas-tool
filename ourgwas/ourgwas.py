@@ -39,7 +39,7 @@ def main():
         args.out = "ourgwas.out.txt"
         
     # Check if the input argument is valid
-    if not args.vcf.endswith('.vcf.gz') or args.vcf.endswith('.vcf'):
+    if not args.vcf.endswith('.vcf') | args.vcf.endswith('.vcf.gz'):
         # Send error to user
         raise argparse.ArgumentTypeError('argument filetype must be a vcf or zipped vcf')
     
