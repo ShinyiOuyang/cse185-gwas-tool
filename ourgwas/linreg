@@ -7,7 +7,7 @@ from sklearn.metrics import mean_squared_error
 data = pd.readcsv('output.txt', delimeter = '\t')
 
 x = data[['CHR', 'SNP', 'BP', 'NMISS', 'P']]  # Input variables
-y = data['BETA']  # Output variable
+y = data['BETA']  # Output variable CHANGE THIS to other column
 
 #linear regression model
 model = LinearRegression()
