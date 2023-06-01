@@ -38,6 +38,11 @@ def main():
         # Set default name of output file
         args.out = "ourgwas.out.txt"
         
+    # Check if the input argument is valid
+    if not args.vcf.endswith('.vcf.gz') or args.vcf.endswith('.vcf'):
+        # Send error to user
+        raise argparse.ArgumentTypeError('argument filetype must be a vcf or zipped vcf')
+    
     phenotype_array = get_phenotypes() # Gets array of normalized phenotype values
     
     # Write to output file
