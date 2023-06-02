@@ -9,9 +9,9 @@ import sklearn.decomposition
 import pandas as pd
 import numpy as py
 import scipy
-import subprocess
+import subprocess, logging
 
-
+logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 
 # Sets up script argument parsing
 parser = argparse.ArgumentParser()
@@ -28,12 +28,14 @@ parser.add_argument("--maf", metavar="n", type=float, default=0.01, help="specif
 parser.add_argument("--qq", action="store_true", help="add a qq plot to the output")
 
 # Output options
-parser.add_argument("-O", "--out", metavar="filename", help="specifies the output root file name (default = ourgwas.out.txt)")
+parser.add_argument("-o", "--out", metavar="filename", help="specifies the output root file name (default = ourgwas.out.txt)")
 
 # Combines all parsed args to be used
 args = parser.parse_args()
 
 def main():    
+    logging.info("Parsing through arguments")
+
     # Check if --out was set
     if args.out is None:
         # Set default name of output file
@@ -45,13 +47,14 @@ def main():
         raise argparse.ArgumentTypeError('argument filetype must be a vcf or zipped vcf')
     
     
+    logging.info("Pruning through vcf file with MAF threshold")
+
+    # Prune input file using the MAF threshold
     bcftools_maf = "MAF<{}".format(args.maf)
     subprocess.run(
-        "bcftools view -e '{}' {} -o output3.vcf".format(bcftools_maf, args.vcf),
+        "bcftools view -e '{}' {} -o intermediate.vcf".format(bcftools_maf, args.vcf),
             shell=True)
-    
-    args.vcf = "output3.vcf"
-    
+            
     phenotype_array = get_phenotypes() # Gets array of normalized phenotype values
     
     # Write to output file
@@ -60,7 +63,10 @@ def main():
         joined_column_names = "\t".join(column_names) + "\n"      # Align all the column names
         writer.write(joined_column_names)
         
-        for variant in VCF(args.vcf):
+        logging.info("Parsing through variants")
+        
+        # Loop through intermediate file
+        for variant in VCF("intermediate.vcf"):
             output_info = []
             genotype_array = []
             
@@ -71,11 +77,12 @@ def main():
                 # 1 | 1 becomes 2
                 genotype_array.append(genotype[0] + genotype[1])
 
+            
             # https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.linregress.html
             reg = scipy.stats.linregress(genotype_array, phenotype_array)
 
             # All information that is outputted
-            
+                        
             output_info.append(str(variant.CHROM))          # Chromosome number
             output_info.append(str(variant.ID))             # SNP identifier
             output_info.append(str(variant.POS))            # Base pair coordinate
@@ -84,6 +91,8 @@ def main():
             output_info.append(str(reg.pvalue))             # Asymptotic p-value for a two-sided t-test
             curr_output = "\t".join(output_info) + "\n"
             writer.write(curr_output)
+    
+    logging.info("DONE")
 
 # Puts the values in the third column of the phenotype file into an array
 def get_phenotypes():
