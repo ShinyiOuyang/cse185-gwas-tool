@@ -9,6 +9,7 @@ import sklearn.decomposition
 import pandas as pd
 import numpy as py
 import scipy
+import subprocess
 
 
 
@@ -42,6 +43,14 @@ def main():
     if not args.vcf.endswith('.vcf') | args.vcf.endswith('.vcf.gz'):
         # Send error to user
         raise argparse.ArgumentTypeError('argument filetype must be a vcf or zipped vcf')
+    
+    
+    bcftools_maf = "MAF<{}".format(args.maf)
+    subprocess.run(
+        "bcftools view -e '{}' {} -o output3.vcf".format(bcftools_maf, args.vcf),
+            shell=True)
+    
+    args.vcf = "output3.vcf"
     
     phenotype_array = get_phenotypes() # Gets array of normalized phenotype values
     

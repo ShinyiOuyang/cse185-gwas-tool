@@ -14,16 +14,16 @@ Note: if you do not have root access, install the same packages locally with:
 pip install --user -U scikit-learn qqman numpy pandas cyvcf2
 ```
 
-Additionally, the [htslib](https://github.com/samtools/htslib/releases/download/1.17/htslib-1.17.tar.bz2) library will be needed to index vcf files using `tabix`. In order to download, click the link above and follow the commands below:
+Additionally, the [bcftools](http://www.htslib.org/download/) library will be needed to index vcf files using and filter variants. In order to download, click the link above and follow the commands below:
 ```
-cd htslib-1.x      # wherever it is downloaded
+cd bcftools-1.x      # wherever it is downloaded
 ./configure
 make
 make install
 ```
 If permission is needed in order to run `make install`, do `sudo make install` and enter the password to your user.
 
-To check if the download was successful, running `tabix --help` should provide the usage.
+To check if the download was successful, running `bcftools --help` should provide the usage.
 
 Once these required libraries are installed, you can install `ourGWAS` with the following command:
 ```
