@@ -17,7 +17,7 @@ pip install --user -U scikit-learn qqman numpy pandas cyvcf2
 Additionally, the [bcftools](http://www.htslib.org/download/) library will be needed to index vcf files using and filter variants. In order to download, click the link above and follow the commands below:
 ```
 cd bcftools-1.x      # wherever it is downloaded
-./configure
+./configure          # NOTE: Windows users may need to install other programs such as GCC and/or zlib
 make
 make install
 ```
