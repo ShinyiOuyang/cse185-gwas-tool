@@ -43,9 +43,11 @@ The basic usage of `ourGWAS` is:
 ourGWAS [other options] pheno-file vcf-file
 ```
 
+NOTE: If you are using VSCode or other virutal environments, please check to make sure the python version is matched with the version on your computer. Otherwise, some packages may not load correctly.
+
 To run `ourGWAS` on some of the small test files in our repo, you can run:
 ```
-ourGWAS example-files/lab3_gwas.phen example-files/lab3_gwas_small.vcf.gz
+ourGWAS ./example-files/lab3_gwas.phen ./example-files/lab3_gwas_small.vcf.gz
 ```
 This should output [this text file](https://github.com/ShinyiOuyang/cse185-gwas-tool/blob/main/output.txt).
 
