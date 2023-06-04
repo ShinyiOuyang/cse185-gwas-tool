@@ -124,7 +124,7 @@ def main():
             model = sm.OLS(genotype_array, phenotype_array)
 
             res = model.fit()
-            print(res.summary())
+            #print(res.summary())
 
             reg = scipy.stats.linregress(genotype_array, phenotype_array)
             t_value = reg.slope / reg.stderr
