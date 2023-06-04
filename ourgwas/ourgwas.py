@@ -6,10 +6,12 @@ from ourgwas import __version__
 import os
 from cyvcf2 import VCF
 import sklearn.decomposition
+from sklearn.linear_model import LinearRegression
 import pandas as pd
 import numpy as py
 import scipy
 import subprocess, logging
+import statsmodels.api as sm
 
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 
@@ -34,8 +36,6 @@ parser.add_argument("-o", "--out", metavar="filename", help="specifies the outpu
 args = parser.parse_args()
 
 def main():    
-    logging.info("Parsing through arguments")
-
     # Check if --out was set
     if args.out is None:
         # Set default name of output file
@@ -45,7 +45,6 @@ def main():
     if not args.vcf.endswith('.vcf') | args.vcf.endswith('.vcf.gz'):
         # Send error to user
         raise argparse.ArgumentTypeError('argument filetype must be a vcf or zipped vcf')
-    
     
     logging.info("Pruning through vcf file with MAF threshold")
 
@@ -57,6 +56,8 @@ def main():
             
     phenotype_array = get_phenotypes() # Gets array of normalized phenotype values
     
+    pca = sklearn.decomposition.PCA()
+
     # Write to output file
     with open (args.out, "w") as writer:
         column_names = ['CHR', 'SNP', 'BP', 'NMISS', 'BETA', 'P'] # Column names of the output file (same as plink)
@@ -64,8 +65,37 @@ def main():
         writer.write(joined_column_names)
         
         logging.info("Parsing through variants")
+
+        num_variants = 0
+        samples = VCF("intermediate.vcf").samples
+        num_genotypes = len(samples)
+        for variant in VCF("intermediate.vcf"):
+            num_variants +=1
         
+        genotypes = py.empty(shape=(num_variants, num_genotypes))
+        curr_row = 0
+
         # Loop through intermediate file
+        # for variant in VCF("intermediate.vcf"):
+        #     output_info = []
+        #     genotype_array = []
+        #     for genotype in variant.genotypes:
+        #         # quantifies genotype
+        #         # 0 | 0 becomes 0
+        #         # 1 | 0 or 0 | 1 becomes 1
+        #         # 1 | 1 becomes 2
+        #         genotype_array.append(genotype[0] + genotype[1])
+            
+        #     genotypes[curr_row] = genotype_array
+        #     curr_row +=1
+        # pca = sklearn.decomposition.PCA(n_components=3)
+
+        # print(py.argwhere(py.isnan(genotypes)))
+        # pca.fit(genotypes)
+        # print(pca.explained_variance_)
+        # print(pca.components_)
+
+        curr_row = 0
         for variant in VCF("intermediate.vcf"):
             output_info = []
             genotype_array = []
@@ -77,22 +107,40 @@ def main():
                 # 1 | 1 becomes 2
                 genotype_array.append(genotype[0] + genotype[1])
 
-            
+            genotype_df = pd.DataFrame(genotype_array, samples)
+            genotype_df = genotype_df.reindex(sorted(samples), axis=0)
             # https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.linregress.html
+            #print(genotype_array)
+            # regression_array = py.empty(shape=(3+1, num_genotypes))
+            # regression_array[0] = genotype_array
+            # for i in range(0, len(pca.components_)):
+            #     regression_array[i+1] = pca.components_[i]
+            # regression_array = py.swapaxes(regression_array, 0, 1)
+            # print(regression_array)
+            # phenotype_array = py.array(phenotype_array)
+            # genotype_array = genotype_array.reshape(-1,1)
+            # phenotype_array = phenotype_array.reshape(-1,1)
+            genotype_array = genotype_df.iloc[:,0].values.tolist()
+            model = sm.OLS(genotype_array, phenotype_array)
+
+            res = model.fit()
+            print(res.summary())
+
             reg = scipy.stats.linregress(genotype_array, phenotype_array)
+            t_value = reg.slope / reg.stderr
 
             # All information that is outputted
-                        
             output_info.append(str(variant.CHROM))          # Chromosome number
             output_info.append(str(variant.ID))             # SNP identifier
             output_info.append(str(variant.POS))            # Base pair coordinate
             output_info.append(str(len(variant.genotypes))) # Number of observations
-            output_info.append(str(reg.rvalue))             # Regression coefficient
+            output_info.append(str(t_value))             # Regression coefficient
             output_info.append(str(reg.pvalue))             # Asymptotic p-value for a two-sided t-test
+            #output_info.append(str(reg.rvalue**2)) For Debugging
             curr_output = "\t".join(output_info) + "\n"
             writer.write(curr_output)
-    
-    logging.info("DONE")
+
+            curr_row+=1
 
 # Puts the values in the third column of the phenotype file into an array
 def get_phenotypes():

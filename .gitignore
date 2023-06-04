@@ -159,7 +159,8 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-# Mac
+# Other Files
 .DS_Store
 lab3_gwas.vcf
 lab3_gwas.vcf.gz.tbi
+plink_gwas.assoc.linear
