@@ -3,15 +3,11 @@ Script to perform whole genome association analysis with linear regression
 """
 import argparse 
 from ourgwas import __version__
-import os
 from cyvcf2 import VCF
-import sklearn.decomposition
-from sklearn.linear_model import LinearRegression
 import pandas as pd
 import numpy as py
 import scipy
 import subprocess, logging
-import statsmodels.api as sm
 
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 
@@ -55,8 +51,6 @@ def main():
             shell=True)
             
     phenotype_array = get_phenotypes() # Gets array of normalized phenotype values
-    
-    pca = sklearn.decomposition.PCA()
 
     # Write to output file
     with open (args.out, "w") as writer:
@@ -67,64 +61,32 @@ def main():
         logging.info("Parsing through variants")
 
         num_variants = 0
-        samples = VCF("intermediate.vcf").samples
-        num_genotypes = len(samples)
         for variant in VCF("intermediate.vcf"):
             num_variants +=1
         
-        genotypes = py.empty(shape=(num_variants, num_genotypes))
-        curr_row = 0
+        genotype_df = get_genotypes()
 
-        # Loop through intermediate file
-        # for variant in VCF("intermediate.vcf"):
-        #     output_info = []
-        #     genotype_array = []
-        #     for genotype in variant.genotypes:
-        #         # quantifies genotype
-        #         # 0 | 0 becomes 0
-        #         # 1 | 0 or 0 | 1 becomes 1
-        #         # 1 | 1 becomes 2
-        #         genotype_array.append(genotype[0] + genotype[1])
-            
-        #     genotypes[curr_row] = genotype_array
-        #     curr_row +=1
         # pca = sklearn.decomposition.PCA(n_components=3)
-
-        # print(py.argwhere(py.isnan(genotypes)))
-        # pca.fit(genotypes)
+        # pca.fit(genotype_df)
         # print(pca.explained_variance_)
         # print(pca.components_)
 
-        curr_row = 0
         for variant in VCF("intermediate.vcf"):
             output_info = []
-            genotype_array = []
-            
-            for genotype in variant.genotypes:
-                # quantifies genotype
-                # 0 | 0 becomes 0
-                # 1 | 0 or 0 | 1 becomes 1
-                # 1 | 1 becomes 2
-                genotype_array.append(genotype[0] + genotype[1])
+            genotype_array = genotype_df.loc[variant.ID].values
 
-            genotype_df = pd.DataFrame(genotype_array, samples)
-            genotype_df = genotype_df.reindex(sorted(samples), axis=0)
-            # https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.linregress.html
-            #print(genotype_array)
-            # regression_array = py.empty(shape=(3+1, num_genotypes))
-            # regression_array[0] = genotype_array
+            # Failed attempt to add covariates
+            # pca_array = py.empty(shape=(3+1, num_genotypes))
+            # pca_array[0] = genotype_array
             # for i in range(0, len(pca.components_)):
-            #     regression_array[i+1] = pca.components_[i]
-            # regression_array = py.swapaxes(regression_array, 0, 1)
-            # print(regression_array)
-            # phenotype_array = py.array(phenotype_array)
-            # genotype_array = genotype_array.reshape(-1,1)
-            # phenotype_array = phenotype_array.reshape(-1,1)
-            genotype_array = genotype_df.iloc[:,0].values.tolist()
-            model = sm.OLS(genotype_array, phenotype_array)
+            #     pca_array[i+1] = pca.components_[i]
+            # pca_array = py.swapaxes(pca_array, 0, 1)
+            # pca_array_expanded = sm.add_constant(pca_array)
+            # model_pca = sm.OLS(pca_array, phenotype_array)
+            # res2 = model_pca.fit()
 
-            res = model.fit()
-            #print(res.summary())
+            # model = sm.OLS(genotype_array, phenotype_array)
+            # res = model.fit()
 
             reg = scipy.stats.linregress(genotype_array, phenotype_array)
             t_value = reg.slope / reg.stderr
@@ -136,11 +98,31 @@ def main():
             output_info.append(str(len(variant.genotypes))) # Number of observations
             output_info.append(str(t_value))             # Regression coefficient
             output_info.append(str(reg.pvalue))             # Asymptotic p-value for a two-sided t-test
-            #output_info.append(str(reg.rvalue**2)) For Debugging
             curr_output = "\t".join(output_info) + "\n"
             writer.write(curr_output)
 
-            curr_row+=1
+def get_genotypes():
+    genotypes = []
+    snps = []
+    samples = VCF("intermediate.vcf").samples
+    for variant in VCF("intermediate.vcf"):
+            output_info = []
+            genotype_array = []
+            for genotype in variant.genotypes:
+                # quantifies genotype
+                # 0 | 0 becomes 0
+                # 1 | 0 or 0 | 1 becomes 1
+                # 1 | 1 becomes 2
+                genotype_array.append(genotype[0] + genotype[1])
+            
+            genotypes.append(genotype_array)
+            snps.append(variant.ID)
+
+    genotype_df = pd.DataFrame(genotypes, index=snps)
+    genotype_df.columns = samples
+    genotype_df = genotype_df.reindex(sorted(samples), axis=1)
+
+    return genotype_df
 
 # Puts the values in the third column of the phenotype file into an array
 def get_phenotypes():
