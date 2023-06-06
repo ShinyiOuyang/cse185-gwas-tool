@@ -54,7 +54,7 @@ def main():
 
     # Write to output file
     with open (args.out, "w") as writer:
-        column_names = ['CHR', 'SNP', 'BP', 'NMISS', 'BETA', 'P'] # Column names of the output file (same as plink)
+        column_names = ['CHR', 'SNP', 'BP', 'A1', 'TEST', 'NMISS', 'BETA', 'STAT', 'P'] # Column names of the output file (same as plink)
         joined_column_names = "\t".join(column_names) + "\n"      # Align all the column names
         writer.write(joined_column_names)
         
@@ -64,47 +64,40 @@ def main():
         for variant in VCF("intermediate.vcf"):
             num_variants +=1
         
-        genotype_df = get_genotypes()
+        samples = VCF("intermediate.vcf").samples
+        genotype_df, snps = get_genotypes(samples)
+
+        logging.info("Doing Regression")
 
         # pca = sklearn.decomposition.PCA(n_components=3)
         # pca.fit(genotype_df)
         # print(pca.explained_variance_)
         # print(pca.components_)
 
-        for variant in VCF("intermediate.vcf"):
+        for i in range(0, len(snps)):
             output_info = []
-            genotype_array = genotype_df.loc[variant.ID].values
-
-            # Failed attempt to add covariates
-            # pca_array = py.empty(shape=(3+1, num_genotypes))
-            # pca_array[0] = genotype_array
-            # for i in range(0, len(pca.components_)):
-            #     pca_array[i+1] = pca.components_[i]
-            # pca_array = py.swapaxes(pca_array, 0, 1)
-            # pca_array_expanded = sm.add_constant(pca_array)
-            # model_pca = sm.OLS(pca_array, phenotype_array)
-            # res2 = model_pca.fit()
-
-            # model = sm.OLS(genotype_array, phenotype_array)
-            # res = model.fit()
+            genotype_array = genotype_df.iloc[i].values
 
             reg = scipy.stats.linregress(genotype_array, phenotype_array)
-            #t_value = reg.slope / reg.stderr
 
             # All information that is outputted
-            output_info.append(str(variant.CHROM))          # Chromosome number
-            output_info.append(str(variant.ID))             # SNP identifier
-            output_info.append(str(variant.POS))            # Base pair coordinate
-            output_info.append(str(num_variants)) # Number of observations
-            output_info.append(str(reg.slope / reg.stderr))             # Regression coefficient
+            curr_snp = snps[i]
+            output_info.append(str(curr_snp[0]))            # Chromosome number
+            output_info.append(str(curr_snp[1]))            # SNP identifier
+            output_info.append(str(curr_snp[2]))            # Base pair coordinate
+            output_info.append(str(curr_snp[3]))            # Alternative Allele
+            output_info.append("ADD")                       # Test type, always ADD
+            output_info.append(str(num_variants))           # Number of observations
+            output_info.append(str(reg.slope))              # Regression coefficient
+            output_info.append(str(reg.slope / reg.stderr)) # T-value
             output_info.append(str(reg.pvalue))             # Asymptotic p-value for a two-sided t-test
             curr_output = "\t".join(output_info) + "\n"
             writer.write(curr_output)
 
-def get_genotypes():
+def get_genotypes(samples):
     genotypes = []
     snps = []
-    samples = VCF("intermediate.vcf").samples
+    
     for variant in VCF("intermediate.vcf"):
         genotype_array = []
         for genotype in variant.genotypes:
@@ -115,13 +108,13 @@ def get_genotypes():
             genotype_array.append(genotype[0] + genotype[1])
             
         genotypes.append(genotype_array)
-        snps.append(variant.ID)
+        snps.append((variant.CHROM, variant.ID, variant.POS, variant.ALT[0]))
 
     genotype_df = pd.DataFrame(genotypes, index=snps)
     genotype_df.columns = samples
     genotype_df = genotype_df.reindex(sorted(samples), axis=1)
 
-    return genotype_df
+    return genotype_df, snps
 
 # Puts the values in the third column of the phenotype file into an array
 def get_phenotypes():
