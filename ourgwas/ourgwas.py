@@ -89,14 +89,14 @@ def main():
             # res = model.fit()
 
             reg = scipy.stats.linregress(genotype_array, phenotype_array)
-            t_value = reg.slope / reg.stderr
+            #t_value = reg.slope / reg.stderr
 
             # All information that is outputted
             output_info.append(str(variant.CHROM))          # Chromosome number
             output_info.append(str(variant.ID))             # SNP identifier
             output_info.append(str(variant.POS))            # Base pair coordinate
-            output_info.append(str(len(variant.genotypes))) # Number of observations
-            output_info.append(str(t_value))             # Regression coefficient
+            output_info.append(str(num_variants)) # Number of observations
+            output_info.append(str(reg.slope / reg.stderr))             # Regression coefficient
             output_info.append(str(reg.pvalue))             # Asymptotic p-value for a two-sided t-test
             curr_output = "\t".join(output_info) + "\n"
             writer.write(curr_output)
@@ -106,17 +106,16 @@ def get_genotypes():
     snps = []
     samples = VCF("intermediate.vcf").samples
     for variant in VCF("intermediate.vcf"):
-            output_info = []
-            genotype_array = []
-            for genotype in variant.genotypes:
-                # quantifies genotype
-                # 0 | 0 becomes 0
-                # 1 | 0 or 0 | 1 becomes 1
-                # 1 | 1 becomes 2
-                genotype_array.append(genotype[0] + genotype[1])
+        genotype_array = []
+        for genotype in variant.genotypes:
+            # quantifies genotype
+            # 0 | 0 becomes 0
+            # 1 | 0 or 0 | 1 becomes 1
+            # 1 | 1 becomes 2
+            genotype_array.append(genotype[0] + genotype[1])
             
-            genotypes.append(genotype_array)
-            snps.append(variant.ID)
+        genotypes.append(genotype_array)
+        snps.append(variant.ID)
 
     genotype_df = pd.DataFrame(genotypes, index=snps)
     genotype_df.columns = samples
