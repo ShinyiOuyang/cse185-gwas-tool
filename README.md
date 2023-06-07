@@ -75,7 +75,7 @@ Users may also specify additional options below:
 ```
 
 # Output
-The output file format is a text file similar to the one outputted by [plink's --linear option](https://www.cog-genomics.org/plink/1.9/formats#assoc_linear).
+The output file format is a text file similar to the one output by [plink's --linear option](https://www.cog-genomics.org/plink/1.9/formats#assoc_linear).
 
 # Contributers
-This repository was created by Riya Kalra, Shinyi Ouyang, and Tyler Yang with inpsiration from [plink](https://zzz.bwh.harvard.edu/plink/). 
+This repository was created by Riya Kalra, Shinyi Ouyang, and Tyler Yang with inspiration from [plink](https://zzz.bwh.harvard.edu/plink/). 
