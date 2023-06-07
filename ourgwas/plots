@@ -4,10 +4,13 @@ import matplotlib.pyplot as plt
 
 #output.txt
 
-data = pd.read_csv('/Users/riyakalra/Library/Mobile Documents/com~apple~CloudDocs/cse185-gwas-tool-main/output.txt', sep = '\t')
+# User Prompt
+file_path = input("Please enter the full file path: ")
+
+data = pd.read_csv(file_path, sep='\t')
 
 # #qqplot
-p_values = data['P']
+p_values = data['P'].values
 
 
 # Expected p-values under the null hypothesis (uniform dist)
