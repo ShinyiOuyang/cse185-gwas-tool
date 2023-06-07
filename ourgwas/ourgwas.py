@@ -99,8 +99,27 @@ def main():
         
         
 def get_qq(fileinput):
-    return None
+   
+    data = pd.read_csv(fileinput, sep='\t')
 
+    #qqplot
+    p_values = data['P'].values
+
+
+    # Expected p-values under the null hypothesis (uniform dist)
+    expected_p = -np.log10(np.linspace(1 / len(p_values), 1, len(p_values)))
+
+    # Sort observed p-values
+    sorted_p = -np.log10(np.sort(p_values))
+
+    # Create plot
+    plt.figure(figsize=(8, 8))
+    plt.scatter(expected_p, sorted_p, color='b', s=10)
+    plt.plot([min(expected_p), max(expected_p)], [min(expected_p), max(expected_p)], color='r', linestyle='--')
+    plt.xlabel('Expected $-log_{10}(P)$')
+    plt.ylabel('Observed $-log_{10}(P)$')
+    plt.title('QQ Plot')
+    plt.show()
 
 def get_genotypes(samples):
     genotypes = []
