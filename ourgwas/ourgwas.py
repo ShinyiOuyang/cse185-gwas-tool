@@ -5,7 +5,7 @@ import argparse
 from ourgwas import __version__
 from cyvcf2 import VCF
 import pandas as pd
-import numpy as py
+import numpy as np
 import scipy
 import subprocess, logging
 
@@ -23,7 +23,7 @@ parser.add_argument("vcf", help="the input file to run pca and gwas")
 # Options
 parser.add_argument("--pca", metavar="n", type=int, default=5, help="specifies the number of prinicple components")
 parser.add_argument("--maf", metavar="n", type=float, default=0.01, help="specifies the threshold to consider the minor allele (default = 0.01)")
-parser.add_argument("--qq", action="store_true", help="add a qq plot to the output")
+parser.add_argument("--qq", action="store_true", help="outputs a qq plot of the data")
 
 # Output options
 parser.add_argument("-o", "--out", metavar="filename", help="specifies the output root file name (default = ourgwas.out.txt)")
@@ -93,6 +93,14 @@ def main():
             output_info.append(str(reg.pvalue))             # Asymptotic p-value for a two-sided t-test
             curr_output = "\t".join(output_info) + "\n"
             writer.write(curr_output)
+            
+    if args.qq is True:
+        get_qq(args.out)
+        
+        
+def get_qq(fileinput):
+    return None
+
 
 def get_genotypes(samples):
     genotypes = []
