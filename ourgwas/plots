@@ -1,24 +1,26 @@
 import pandas as pd
 import numpy as np
-#from sklearn.linear_model import LinearRegression
-#from sklearn.metrics import mean_squared_error
-#import statsmodels.api as sm
 import matplotlib.pyplot as plt
 
 #output.txt
 
-data = pd.readcsv('output.txt', delimeter = '\t')
+data = pd.read_csv('/Users/riyakalra/Library/Mobile Documents/com~apple~CloudDocs/cse185-gwas-tool-main/output.txt', sep = '\t')
 
-#qqplot
+# #qqplot
 p_values = data['P']
 
-# Generate the QQ plot
-sm.qqplot(p_values, line='s')
 
-# Set plot labels and title
-plt.xlabel('Theoretical Quantiles')
-plt.ylabel('Sample Quantiles')
-plt.title('QQ Plot')
+# Expected p-values under the null hypothesis (uniform dist)
+expected_p = -np.log10(np.linspace(1 / len(p_values), 1, len(p_values)))
 
-# Display the plot
+# Sort observed p-values
+sorted_p = -np.log10(np.sort(p_values))
+
+# Create plot
+plt.figure(figsize=(8, 8))
+plt.scatter(expected_p, sorted_p, color='b', s=10)
+plt.plot([min(expected_p), max(expected_p)], [min(expected_p), max(expected_p)], color='r', linestyle='--')
+plt.xlabel('Expected $-log_{10}(P)$')
+plt.ylabel('Observed $-log_{10}(P)$')
+plt.title('Q-Q Plot')
 plt.show()
