@@ -1,5 +1,6 @@
 numpy
-tabix
-sklearn
 pandas
 qqman
+scipy
+matplotlib
+cyvcf2

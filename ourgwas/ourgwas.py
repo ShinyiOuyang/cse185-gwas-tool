@@ -71,10 +71,14 @@ def main():
 
         logging.info("Doing Regression")
 
-        # pca = sklearn.decomposition.PCA(n_components=3)
-        # pca.fit(genotype_df)
-        # print(pca.explained_variance_)
-        # print(pca.components_)
+        new_array = []
+        for phen in reversed(range(len(phenotype_array))):
+            if isinstance(phenotype_array[phen], int) or isinstance(phenotype_array[phen], float):
+                new_array.append(phenotype_array[phen])
+            else:
+                genotype_df = genotype_df.drop(genotype_df.columns[phen], axis = 1)
+        phenotype_array = new_array
+        print(genotype_df.head())
 
         for i in range(0, len(snps)):
             output_info = []
@@ -161,7 +165,11 @@ def get_phenotypes():
         for line in pheno_reader:
             content = line.split("\t")
             #strip() gets rid of the newline ("\n") at the end
-            phenotypes.append(float(content[2].strip()))
+            try:
+                phenotypes.append(float(content[2].strip()))
+            except ValueError:
+                phenotypes.append(content[2].strip())
+            
             
     return phenotypes
 
