@@ -6,10 +6,17 @@ import matplotlib.pyplot as plt
 
 # User Prompt
 file_path = input("Please enter the full file path: ")
+delim_choice = input("Is this file delimited by whitespace (W) or tabs (T)? ")
 
-data = pd.read_csv(file_path, sep='\t')
+delim = "\t"
 
-# #qqplot
+if delim_choice == "W":
+    delim = "\s+"
+
+
+data = pd.read_csv(file_path, sep=delim)
+
+#qqplot
 p_values = data['P'].values
 
 
@@ -25,5 +32,5 @@ plt.scatter(expected_p, sorted_p, color='b', s=10)
 plt.plot([min(expected_p), max(expected_p)], [min(expected_p), max(expected_p)], color='r', linestyle='--')
 plt.xlabel('Expected $-log_{10}(P)$')
 plt.ylabel('Observed $-log_{10}(P)$')
-plt.title('Q-Q Plot')
+plt.title('QQ Plot')
 plt.show()
