@@ -8,6 +8,8 @@ import pandas as pd
 import numpy as np
 import scipy
 import subprocess, logging
+import matplotlib.pyplot as plt
+
 
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 
@@ -93,11 +95,18 @@ def main():
             output_info.append(str(reg.pvalue))             # Asymptotic p-value for a two-sided t-test
             curr_output = "\t".join(output_info) + "\n"
             writer.write(curr_output)
-            
+
+    # Check to see if the qq option was set
     if args.qq is True:
+        logging.info("Creating the qq plot")
+        
+        # Create the graph
         get_qq(args.out)
         
         
+    logging.info("Done")
+    
+# Script to get the qq plot
 def get_qq(fileinput):
    
     data = pd.read_csv(fileinput, sep='\t')
