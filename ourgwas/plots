@@ -8,17 +8,6 @@ import matplotlib.pyplot as plt
 
 data = pd.readcsv('output.txt', delimeter = '\t')
 
-#x = data[['CHR', 'SNP', 'BP', 'NMISS', 'P']]  # Input variables
-#y = data['P']  # Output variable
-
-#linear regression model
-#model = LinearRegression()
-#model.fit(X, y)
-
-#coefficients and intercept
-#print('Intercept:', model.intercept_)
-#print('Coefficients:', model.coef_)
-
 #qqplot
 p_values = data['P']
 
