@@ -65,7 +65,7 @@ The input required with our tool is a sorted and indexed vcf file and a phenotyp
 
 Users may also specify additional options below:
 ```
---output FILE: specifies output root file name, by default, the file will be called ourGWAS.
+--output FILE: specifies output root file name, by default, the file will be called ourgwas.out.txt.
 
 --maf FLOAT: a decimal number from 0-1 which specifies the minimum minor allele frequency threshold to be considered. By default, this value is 0.01.
 
