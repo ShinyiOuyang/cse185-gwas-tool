@@ -4,6 +4,8 @@ import pandas
 #https://ftp.ebi.ac.uk/pub/databases/eva/PRJEB14385/
 #https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0010780#pone.0010780.s007
 
+# Plink does not work on this dataset
+
 rice_data = pandas.read_excel("./real-data/rice_data.xls")
 
 print(rice_data.head())

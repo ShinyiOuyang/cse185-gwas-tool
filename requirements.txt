@@ -1,6 +1,6 @@
 numpy
 pandas
-qqman
 scipy
+qqman
 matplotlib
 cyvcf2
